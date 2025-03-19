@@ -5,6 +5,7 @@ import { PropsWithChildren } from "react";
  
 const BackGround: React.FC<PropsWithChildren> = ({ children }) => {
     const canvasRef = useRef<HTMLCanvasElement>(null);
+    const backgroundColor = "#050511"; // Grey background color
 
     useEffect(() => {
       const canvas = canvasRef.current;
@@ -43,17 +44,17 @@ const BackGround: React.FC<PropsWithChildren> = ({ children }) => {
         pixels.push(createRandomPixel());
       }
       
-      // Fill canvas with black initially
-      ctx.fillStyle = "rgb(0, 0, 0)";
+      // Fill canvas with grey initially
+      ctx.fillStyle = backgroundColor;
       ctx.fillRect(0, 0, canvas.width, canvas.height);
   
       function draw() {
         if (!ctx || !canvas) return;
         
-        // Clear previous pixel positions with pure black
+        // Clear previous pixel positions with grey
         for (let i = 0; i < pixels.length; i++) {
           const pixel = pixels[i];
-          ctx.fillStyle = "rgb(0, 0, 0)";
+          ctx.fillStyle = backgroundColor;
           ctx.fillRect(
             pixel.prevX * spacing, 
             pixel.prevY * spacing, 
@@ -100,8 +101,8 @@ const BackGround: React.FC<PropsWithChildren> = ({ children }) => {
         canvas.width = window.innerWidth;
         canvas.height = window.innerHeight;
         
-        // Refill with black after resize
-        ctx.fillStyle = "rgb(0, 0, 0)";
+        // Refill with grey after resize
+        ctx.fillStyle = backgroundColor;
         ctx.fillRect(0, 0, canvas.width, canvas.height);
       }
   
@@ -114,9 +115,9 @@ const BackGround: React.FC<PropsWithChildren> = ({ children }) => {
     }, []);
   
     return (
-    <div className="fixed inset-0 bg-black">
-      <canvas ref={canvasRef} className="" />
-      <div className="flex items-center justify-center h-full">
+    <div className="flex items-center justify-center h-full">
+      <canvas ref={canvasRef} className="absolute w-3/4 h-3/4 " />
+      <div className="relative z-10">
         {children}
       </div>
     </div>
