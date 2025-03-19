@@ -2,6 +2,10 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import { Jersey_15 ,Jersey_10} from "next/font/google";
 import "./globals.css";
+import { Toaster } from "@/components/ui/toaster";
+
+
+
 
 const jersey10 = Jersey_10({
   weight: "400",
@@ -36,6 +40,7 @@ export default function RootLayout({
       >
         {children}
       </body>
+     <Toaster />
     </html>
   );
 }

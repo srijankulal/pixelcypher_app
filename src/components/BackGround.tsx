@@ -97,7 +97,7 @@ const BackGround: React.FC<BackGroundProps> = ({ children, className }) => {
         }
       }
   
-      const intervalId = setInterval(draw, 120);
+      const intervalId = setInterval(draw, 50);
   
       function handleResize() {
         if (!canvas || !ctx) return;
@@ -119,7 +119,7 @@ const BackGround: React.FC<BackGroundProps> = ({ children, className }) => {
     }, []);
   
     return (
-    <div className="flex justify-center p-2 h-screen w-screen relative  ">
+    <div className="flex justify-center p-2 h-screen w-screen relative rounded-sm overflow-hidden ">
       <canvas ref={canvasRef} className="absolute w-3/4 h-3/4  border-2 border-green-950 rounded-md " />
       <div className="relative z-10">
         {children}

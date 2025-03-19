@@ -1,9 +1,12 @@
+
+"use client";
 import BackGround from "@/components/BackGround";
 import FloatButtons from "@/components/FloatButtons";
 import Header from "@/components/Header";
 import Image from "next/image";
 import home from "../../public/home.png";
 import { Button } from "@/components/ui/button";
+import Link from "next/link";
 
 export default function Home() {
   return (
@@ -11,19 +14,22 @@ export default function Home() {
   <div className=" bg-black">  
     <Header></Header>
     <BackGround >
-    <FloatButtons></FloatButtons>
+    <FloatButtons whereAt="home"></FloatButtons>
     <div className="flex flex-col items-center">
       <h3 className="text-white p-3 text-xl">Encrypt Your Messages as Images</h3>
       <Image src={home} alt="home" className="w-1/4 h-1/4" />
       <p className="text-white p-2 text-base sm:text-lg md:text-xl  text-center mx-auto">PixelCypher is a secure text-to-image encryption and decryption tool.</p>  
-      <Button effect="shine" className="text-white p-2 text-lg hover:outline">
-  Start Encrypting
-</Button>
+   <Link href="/encrypt">
+    <Button className="text-white p-2 text-lg hover:outline" effect="shine">
+Start Encrypting
+    </Button>
+   </Link>
+
   {/* Center heading */}
   <h2 className="text-white p-2 text-2xl font-bold">What can app do?</h2>
   
   {/* Three columns with the middle column as separator */}
-  <div className="flex flex-row justify-between items-center border-2 border-gray-950 rounded-md p-2 m-2 bg-white bg-opacity-20 w-4/5">
+  <div className="flex flex-row justify-between items-center border-2 border-gray-950 rounded-lg p-2 m-2 bg-white bg-opacity-20 w-4/5 ">
     {/* First column - Encrypt */}
     <div className="flex flex-col items-center p-2 w-1/3">
       <h2 className="text-white p-2 text-xl font-semibold">Encrypt</h2>
