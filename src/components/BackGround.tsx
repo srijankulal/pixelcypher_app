@@ -3,7 +3,11 @@
 import { useEffect, useRef } from "react";
 import { PropsWithChildren } from "react"; 
  
-const BackGround: React.FC<PropsWithChildren> = ({ children }) => {
+interface BackGroundProps extends PropsWithChildren {
+  className?: string;
+}
+
+const BackGround: React.FC<BackGroundProps> = ({ children, className }) => {
     const canvasRef = useRef<HTMLCanvasElement>(null);
     const backgroundColor = "#050511"; // Grey background color
 
@@ -115,8 +119,8 @@ const BackGround: React.FC<PropsWithChildren> = ({ children }) => {
     }, []);
   
     return (
-    <div className="flex items-center justify-center h-full">
-      <canvas ref={canvasRef} className="absolute w-3/4 h-3/4 " />
+    <div className="flex justify-center p-2 h-screen w-screen relative  ">
+      <canvas ref={canvasRef} className="absolute w-3/4 h-3/4  border-2 border-green-950 rounded-md " />
       <div className="relative z-10">
         {children}
       </div>
