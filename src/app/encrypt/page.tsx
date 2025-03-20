@@ -10,7 +10,7 @@ import EnPH from "../../../public/PHpic.png";
 import { Button } from 'antd';
 import { useState } from "react";
 import { toast } from "@/hooks/use-toast";
-import { ToastAction } from "@radix-ui/react-toast";
+
 
 
 
@@ -27,7 +27,15 @@ export default function Encrypt() {
           return newLoadings;
         });
     };
+    // Reset loading state
+ const setFalse=()=>{
+    setLoadings((prevLoadings) => {
+        const newLoadings = [...prevLoadings];
+        newLoadings[2] = false;
+        return newLoadings;
+    });
 
+ }
 // Function to handle copying the image to clipboard
 const handleCopyImage = async () => {
     if (!encryptedImageUrl) {
@@ -88,9 +96,33 @@ const handleCopyImage = async () => {
   const handleEncrypt = async () => {
     try {
         setEncryptedImageUrl(null);
-        enterLoading(1);
+        enterLoading(2);
+        if(!imageBuffer && (!text || !text.trim())){
+            toast({
+                title:"Error",
+                description:"No image file and text provided",
+                variant:"destructive"
+            });
+            setFalse();
+            return;
+        }
         if (!imageBuffer) {
             console.error("No image selected");
+        toast({
+            title:"Error",
+            description:"No image is selected",
+            variant:"destructive"
+        });
+        setFalse();
+            return;
+        }
+        if(!text){
+            toast({
+                title:"Error",
+                description:"No text is entered",
+                variant:"destructive"
+            })
+            setFalse();
             return;
         }
         
@@ -104,27 +136,49 @@ const handleCopyImage = async () => {
             body: formData,
              
           });
-        if (!response.ok) {
-            console.error("Failed to process request");
+        if (response.status !== 200) {
+            console.log(response.status)
+            if(response.status === 400 ){
+                toast({
+                    title:"Error",
+                    description:"No image file and text provided",
+                    variant:"destructive"
+                });
+                setFalse();
+                return;
+            } 
+             if(response.status === 401){
+                toast({title:"Error",
+                    description:"No image file provided",
+                    variant:"destructive"
+                });
+                setFalse();
+                return;
+            }
+                if(response.status === 402){
+                    toast({
+                        title:"Error",
+                    description:"No text provided",
+                    variant:"destructive"
+                    });
+                    setFalse();
+                    return;
+                }
+                toast({
+                    title:"Error",
+                    description:"Failed to process request",
+                    variant:"destructive"
+                })
+                setFalse();
             return;
         }
         // Parse the response to get the image URL
         const path=await response.json();
         const trimPath = path.EncrpytImagePath.toString().replace(/\\/g, "/").replace(/^.*?public/, '');
 
-        console.log(trimPath);
+
         setEncryptedImageUrl(`${trimPath}?t=${Date.now()}`);
-        setLoadings((prevLoadings) => {
-            const newLoadings = [...prevLoadings];
-            newLoadings[1] = false;
-            return newLoadings;
-        });
-        // Reset loading state
-        setLoadings((prevLoadings) => {
-            const newLoadings = [...prevLoadings];
-            newLoadings[1] = false;
-            return newLoadings;
-        });
+        setFalse();
         toast({
           title: "Success",
           description: "Encryption successful",
@@ -132,19 +186,18 @@ const handleCopyImage = async () => {
           className: "bg-green-500 text-white",
           duration: 5000,
         });
-
         console.log("Encryption successful");
     } catch (error) {
         console.error("Encryption failed:", error);
         // Reset loading state
-        setLoadings((prevLoadings) => {
-            const newLoadings = [...prevLoadings];
-            newLoadings[1] = false;
-            return newLoadings;
-        });
+        setFalse();
+    }
+    finally{
+        setText("");
+
     }
 };
-    
+
     return (
         <>
             <Header></Header>
@@ -156,7 +209,8 @@ const handleCopyImage = async () => {
                     <div className="flex flex-col">
                         <Upload onImageUpload={(buffer: ArrayBuffer | null) => {
                             setImageBuffer(buffer);
-                            setEncryptedImageUrl(null);
+                            
+                            
                         }}></Upload>
                         <h1 className="text-white p-3 text-2xl font-bold justify-start">Enter Encrypting Text: </h1>
                         <input 
@@ -175,20 +229,28 @@ const handleCopyImage = async () => {
                             loading={loadings[2]}
                             onClick={() => {
                                 handleEncrypt();
+                                
                             }}
                             iconPosition="end"
                             className="text-white p-4 bg-green-600 hover:bg-green-800 transition-colors duration-300 hover:outline hover:shadow-lg" 
                         >
                             Encrypt
                         </Button>
+                        
                     </div>
                     
                     <div className="flex flex-col">
                         <h1 className="text-white p-3 text-2xl font-bold">Encrypted Image: </h1>
-                        <div className="flex flex-row justify-center items-center border-2 border-gray-950 rounded-lg p-2 m-2 bg-white bg-opacity-20  "> 
-                            <Image src={encryptedImageUrl || EnPH} alt="Encrypted Image" className="w-fit h-fit " width={300} height={300}/>
+                        <div className="flex justify-center items-center border-2 border-gray-950 rounded-lg bg-white bg-opacity-20 relative h-64 w-64">
+                            <Image 
+                                src={encryptedImageUrl || EnPH} 
+                                alt="Encrypted Image" 
+                                fill 
+                                style={{ objectFit: 'contain' }}
+                                className="p-2"
+                            />
                         </div>
-                        <div className="flex flex-row items-center">
+                        <div className="flex flex-row items-center  pt-2">
                             <div className="flex flex-col pr-4 pl-2">
                                 <Button className={`text-white text-lg bg-green-500 rounded-full ${!encryptedImageUrl ? 'opacity-50 cursor-not-allowed ' : 'hover:outline'}`}
                                 onClick={handleCopyImage}>

@@ -5,6 +5,7 @@ import { existsSync } from 'fs';
 import * as crypto from 'crypto';
 import { toast } from '@/hooks/use-toast';
 
+
 const API_URL = "https://pixelcypher-production.up.railway.app/api/encode";
 
 // Utility function to send encoding request to external API
@@ -51,17 +52,24 @@ export async function POST(request: NextRequest) {
         const formData = await request.formData();
         const image = formData.get('image') as File | null;
         const text = formData.get('text') as string | null;
-
-        if (!image) {
+        const trimText=text?.trim()
+        if(!text?.trim() && !image){
+            console.log('No image file and text provided');
             return NextResponse.json(
-                { error: 'No image file provided' },
+                { error: 'No image file and text provided' },
                 { status: 400 }
             );
         }
-        if (!text) {
+        if (!image) {
+            return NextResponse.json(
+                { error: 'No image file provided' },
+                { status: 401 }
+            );
+        }
+        if (!trimText || !text) {
             return NextResponse.json(
                 { error: 'No text provided' },
-                { status: 400 })
+                { status: 402 })
         }
         const bytes = await image.arrayBuffer();
         const buffer = Buffer.from(bytes);

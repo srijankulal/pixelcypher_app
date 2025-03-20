@@ -9,7 +9,7 @@ import { useToast } from "@/hooks/use-toast"
 
 
 
-export default function Upload({ onImageUpload, setEncryptedImageUrl}: { onImageUpload?: (buffer: ArrayBuffer) => void, setEncryptedImageUrl?: (url: string | null) => void }) {
+export default function Upload({ onImageUpload}: { onImageUpload?: (buffer: ArrayBuffer) => void, setEncryptedImageUrl?: (url: string | null) => void }) {
     const [imageUrl, setImageUrl] = useState<string | null>(null);
     const { toast } = useToast();
     
@@ -75,9 +75,6 @@ export default function Upload({ onImageUpload, setEncryptedImageUrl}: { onImage
     const handleReset = async() => {
         setImageUrl(null);
         if (onImageUpload) {
-            if (setEncryptedImageUrl) {
-                setEncryptedImageUrl(null);
-            }
             onImageUpload(new ArrayBuffer(0));
             // Send empty buffer when reset
             toast({
