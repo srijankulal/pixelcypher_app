@@ -192,10 +192,6 @@ const handleCopyImage = async () => {
         // Reset loading state
         setFalse();
     }
-    finally{
-        setText("");
-
-    }
 };
 
     return (
@@ -207,11 +203,15 @@ const handleCopyImage = async () => {
                 <div className="flex flex-row justify-between p-5 gap-8">
                    
                     <div className="flex flex-col">
-                        <Upload onImageUpload={(buffer: ArrayBuffer | null) => {
+                        <Upload 
+                        onImageUpload={(buffer: ArrayBuffer | null) => {
                             setImageBuffer(buffer);
-                            
-                            
-                        }}></Upload>
+                        }}
+                        onImageRemove={() => {
+                            setImageBuffer(null);
+                            setText("");
+                        }}
+                        ></Upload>
                         <h1 className="text-white p-3 text-2xl font-bold justify-start">Enter Encrypting Text: </h1>
                         <input 
                             type="text" 
