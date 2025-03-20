@@ -11,7 +11,7 @@ import { useToast } from "@/hooks/use-toast"
 
 
 
-export default function Upload() {
+export default function Upload({ onImageUpload }: { onImageUpload?: (buffer: ArrayBuffer) => void }) {
     const [imageUrl, setImageUrl] = useState<string | null>(null);
     const { toast } = useToast();
     
@@ -42,12 +42,23 @@ export default function Upload() {
                 return false;
             }
             
-            // Store file locally by creating a URL
-            const reader = new FileReader();
-            reader.onload = () => {
-                setImageUrl(reader.result as string);
+            // Create a file reader for URL display
+            const urlReader = new FileReader();
+            urlReader.onload = () => {
+                setImageUrl(urlReader.result as string);
             };
-            reader.readAsDataURL(file);
+            urlReader.readAsDataURL(file);
+            
+            // Create a file reader for buffer data
+            if (onImageUpload) {
+                const bufferReader = new FileReader();
+                bufferReader.onload = () => {
+                    if (bufferReader.result instanceof ArrayBuffer) {
+                        onImageUpload(bufferReader.result);
+                    }
+                };
+                bufferReader.readAsArrayBuffer(file);
+            }
             
             return false;
         },
@@ -65,6 +76,9 @@ export default function Upload() {
 
     const handleReset = () => {
         setImageUrl(null);
+        if (onImageUpload) {
+            onImageUpload(new ArrayBuffer(0)); // Send empty buffer when reset
+        }
     };
     
     return (    
