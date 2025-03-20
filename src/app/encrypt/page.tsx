@@ -10,6 +10,7 @@ import EnPH from "../../../public/PHpic.png";
 import { Button } from 'antd';
 import { useState } from "react";
 import { toast } from "@/hooks/use-toast";
+import { ToastAction } from "@radix-ui/react-toast";
 
 
 
@@ -30,7 +31,7 @@ export default function Encrypt() {
 // Function to handle copying the image to clipboard
 const handleCopyImage = async () => {
     if (!encryptedImageUrl) {
-      console.error("No encrypted image to copy");
+      console.error("Button works ,but no encrypted image to copy");
       return;
     }
   
@@ -46,6 +47,13 @@ const handleCopyImage = async () => {
       
       // Try to write to the clipboard
       await navigator.clipboard.write([item]);
+      toast({
+        title: "Copied",
+        description: "Image copied to clipboard",
+        variant: "default",
+        className: "bg-green-500 text-white",
+        duration: 5000,
+      });
       console.log("Image copied to clipboard");
     } catch (error) {
       console.error("Failed to copy image to clipboard:", error);
@@ -55,7 +63,7 @@ const handleCopyImage = async () => {
   };   
   const handleDownloadImage = () => {
     if (!encryptedImageUrl) {
-      console.error("No encrypted image to download");
+      console.error("Suiiiiiiii");
       return;
     }
     
@@ -68,7 +76,13 @@ const handleCopyImage = async () => {
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
-    
+    toast({
+        title: "Success",
+        description: "Image download initiated",
+        variant: "default",
+        className: "bg-green-500 text-white",
+        duration: 5000,
+      });
     console.log("Image download initiated");
   }; 
   const handleEncrypt = async () => {
@@ -88,7 +102,7 @@ const handleCopyImage = async () => {
         const response = await fetch('/api/Encode', {
             method: 'POST',
             body: formData,
-            credentials: 'include'  // Add this line
+             
           });
         if (!response.ok) {
             console.error("Failed to process request");
@@ -97,7 +111,14 @@ const handleCopyImage = async () => {
         // Parse the response to get the image URL
         const path=await response.json();
         const trimPath = path.EncrpytImagePath.toString().replace(/\\/g, "/").replace(/^.*?public/, '');
-        setEncryptedImageUrl(trimPath);
+
+        console.log(trimPath);
+        setEncryptedImageUrl(`${trimPath}?t=${Date.now()}`);
+        setLoadings((prevLoadings) => {
+            const newLoadings = [...prevLoadings];
+            newLoadings[1] = false;
+            return newLoadings;
+        });
         // Reset loading state
         setLoadings((prevLoadings) => {
             const newLoadings = [...prevLoadings];
@@ -108,8 +129,10 @@ const handleCopyImage = async () => {
           title: "Success",
           description: "Encryption successful",
           variant: "default",
+          className: "bg-green-500 text-white",
+          duration: 5000,
         });
-        
+
         console.log("Encryption successful");
     } catch (error) {
         console.error("Encryption failed:", error);
@@ -129,9 +152,12 @@ const handleCopyImage = async () => {
                 <FloatButtons whereAt="encrypt"></FloatButtons>
                 <h1 className="text-white p-4 text-4xl font-bold flex justify-center items-center w-full">Encrypt</h1>
                 <div className="flex flex-row justify-between p-5 gap-8">
-                    
+                   
                     <div className="flex flex-col">
-                        <Upload onImageUpload={(buffer) => setImageBuffer(buffer)}></Upload>
+                        <Upload onImageUpload={(buffer: ArrayBuffer | null) => {
+                            setImageBuffer(buffer);
+                            setEncryptedImageUrl(null);
+                        }}></Upload>
                         <h1 className="text-white p-3 text-2xl font-bold justify-start">Enter Encrypting Text: </h1>
                         <input 
                             type="text" 
@@ -164,9 +190,9 @@ const handleCopyImage = async () => {
                         </div>
                         <div className="flex flex-row items-center">
                             <div className="flex flex-col pr-4 pl-2">
-                                <Button className="text-white text-lg hover:outline bg-green-500 rounded-full"
-                                onClick={handleCopyImage}
-                                disabled={!encryptedImageUrl}>
+                                <Button className={`text-white text-lg bg-green-500 rounded-full ${!encryptedImageUrl ? 'opacity-50 cursor-not-allowed ' : 'hover:outline'}`}
+                                onClick={handleCopyImage}>
+                                
                                     <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
                                     </svg>
@@ -174,9 +200,9 @@ const handleCopyImage = async () => {
                             </div>
                             
                             <div className="flex flex-col">
-                                <Button className="text-white text-lg hover:outline bg-green-500 rounded-full"
+                                <Button className={`text-white text-lg bg-green-500 rounded-full ${!encryptedImageUrl ? 'opacity-50 cursor-not-allowed ' : 'hover:outline'}`}
                                 onClick={handleDownloadImage}
-                                disabled={!encryptedImageUrl}>
+                                >
                                     <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"
                                     >
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />

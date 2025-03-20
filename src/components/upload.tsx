@@ -1,17 +1,15 @@
 "use client";
 import Dragger from "antd/es/upload/Dragger";
-import { message, UploadProps } from "antd";
+import {  UploadProps } from "antd";
 import UploadPic from "../../public/Image upload-bro.svg";
 import Image from "next/image";
 import { useState } from "react";
-
-import { Button } from "@/components/ui/button"
-import { ToastAction } from "@/components/ui/toast"
 import { useToast } from "@/hooks/use-toast"
 
 
 
-export default function Upload({ onImageUpload }: { onImageUpload?: (buffer: ArrayBuffer) => void }) {
+
+export default function Upload({ onImageUpload, setEncryptedImageUrl}: { onImageUpload?: (buffer: ArrayBuffer) => void, setEncryptedImageUrl?: (url: string | null) => void }) {
     const [imageUrl, setImageUrl] = useState<string | null>(null);
     const { toast } = useToast();
     
@@ -74,12 +72,22 @@ export default function Upload({ onImageUpload }: { onImageUpload?: (buffer: Arr
         showUploadList: false, // Hide the default upload list
     };
 
-    const handleReset = () => {
+    const handleReset = async() => {
         setImageUrl(null);
         if (onImageUpload) {
-            onImageUpload(new ArrayBuffer(0)); // Send empty buffer when reset
+            if (setEncryptedImageUrl) {
+                setEncryptedImageUrl(null);
+            }
+            onImageUpload(new ArrayBuffer(0));
+            // Send empty buffer when reset
+            toast({
+                title: "Image Reset",
+                description: "The uploaded image has been removed.",
+            });
         }
     };
+
+
     
     return (    
         <>

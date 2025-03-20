@@ -3,11 +3,13 @@ import { join } from 'path';
 import { writeFile, mkdir, readdir as readdirPromise, unlink } from 'fs/promises';
 import { existsSync } from 'fs';
 import * as crypto from 'crypto';
+import { toast } from '@/hooks/use-toast';
 
-const API_URL = "http://localhost:8080/api/encode";
+const API_URL = "https://pixelcypher-production.up.railway.app/api/encode";
 
 // Utility function to send encoding request to external API
 async function sendToExternalAPI(imageBuffer: Buffer, text: string): Promise<any> {
+    await deleteImg();
     const formData = new FormData();
     const imageBlob = new Blob([imageBuffer], { type: 'image/png' });
     formData.append('image', imageBlob, 'image.png');
@@ -28,9 +30,16 @@ async function sendToExternalAPI(imageBuffer: Buffer, text: string): Promise<any
  
     const img = await response.blob();
     const imgBuffer = Buffer.from(await img.arrayBuffer());
-    const imgPath = join(process.cwd(), 'public', 'images', 'encrypted-image.png');
     await mkdir(join(process.cwd(), 'public', 'images'), { recursive: true });
-    await writeFile(imgPath, imgBuffer);
+    const imgPath = join(process.cwd(), 'public', 'images', 'encrypted-image.png');
+    try {
+        // Write file and wait for completion
+        await writeFile(imgPath, imgBuffer);
+        console.log('Image successfully saved to', imgPath);
+    } catch (writeError) {
+        console.error('Error saving encrypted image:', writeError);
+        throw new Error('Failed to save encrypted image');
+    }
     return imgPath;
 
 }
@@ -38,6 +47,7 @@ async function sendToExternalAPI(imageBuffer: Buffer, text: string): Promise<any
 // Process a multipart form with an image and text to encode
 export async function POST(request: NextRequest) {
     try {
+        
         const formData = await request.formData();
         const image = formData.get('image') as File | null;
         const text = formData.get('text') as string | null;
@@ -48,12 +58,10 @@ export async function POST(request: NextRequest) {
                 { status: 400 }
             );
         }
-
         if (!text) {
             return NextResponse.json(
-                { error: 'No text to encode provided' },
-                { status: 400 }
-            );
+                { error: 'No text provided' },
+                { status: 400 })
         }
         const bytes = await image.arrayBuffer();
         const buffer = Buffer.from(bytes);
@@ -85,3 +93,21 @@ export async function POST(request: NextRequest) {
         }
     }
 }
+
+async function deleteImg() 
+ {
+    try {
+        const imgDir = join(process.cwd(), 'public', 'images');
+                if (existsSync(imgDir)) {
+                    const files =await readdirPromise(imgDir);
+                    for (const file of files) {
+                        await unlink(join(imgDir, file));
+                    }
+                    
+                }
+            } catch (cleanupError) {
+                console.error('Error cleaning up temporary files:', cleanupError);
+            }
+}
+
+  
