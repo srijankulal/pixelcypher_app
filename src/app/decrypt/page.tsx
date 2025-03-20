@@ -1,5 +1,4 @@
 "use client";
-
 import BackGround from "@/components/BackGround";
 import FloatButtons from "@/components/FloatButtons";
 import Header from "@/components/Header";
@@ -7,10 +6,6 @@ import Upload from "@/components/upload";
 import { toast } from "@/hooks/use-toast";
 import { Button } from "antd";
 import { useState } from "react";
-
-
-
-
 
 
 export default function Decrypt() {
@@ -31,7 +26,6 @@ export default function Decrypt() {
         newLoadings[2] = false;
         return newLoadings;
     });
-
  }
 
     const handleDecrypt = async () => {
@@ -64,7 +58,13 @@ export default function Decrypt() {
             return;
         }
         const data = await response.json();
-        console.log(data);
+        if(!data.DecryptedText.trim()){
+            toast({
+                title:"Error",
+                description:"No text found in the image",
+                variant:"destructive"
+            });
+        }
         setText(data.DecryptedText);
         setFalse();
 }
@@ -79,13 +79,12 @@ export default function Decrypt() {
                                 setImageBuffer(buffer);
                                 }}
                                 onImageRemove={() => {
-                                // Debug to verify this gets called
                                 setImageBuffer(null);
-                                setText(""); // This should clear the text
+                                setText(""); // Clear text on image removal
                                 }}
                                     ></Upload>
                             <div className="flex flex-col items-center justify-center">
-                                <div className="flex flex-col items-center justify-center pt-2">
+                                <div className="flex flex-col items-center justify-center pt-3  ">
                                 <Button
                                     type="primary"
                                     loading={loadings[2]}
@@ -95,13 +94,17 @@ export default function Decrypt() {
                                     Decrypt
                                 </Button>
                                 </div>
+
                                 <h2 className="text-white p-2 text-2xl font-bold">Decrypted Text:</h2>
+                                
                                 <textarea 
-    className="w-3/4 h-1/4 p-2 text-white placeholder-white bg-white bg-opacity-50 rounded-lg" 
-    value={text || ''} 
-    placeholder="Decrypted text will appear here" 
-    readOnly
-></textarea>
+                                className="w-3/4 h-3/4 p-1 text-white placeholder-white bg-white bg-opacity-50 rounded-lg" 
+                                value={text || ''} 
+                                placeholder="Decrypted text will appear here" 
+                                readOnly
+                                        >
+                            </textarea>
+                            
                                 </div>
             </BackGround>
         </>

@@ -65,27 +65,20 @@ export default function Upload({ onImageUpload, setEncryptedImageUrl, onImageRem
                 onChange(info) {
                         const { status } = info.file;
                         if (status !== 'uploading') {
-                                console.log(info.file, info.fileList);
+                                // console.log(info.file, info.fileList);
                         }
                 },
                 onDrop(e) {
-                        console.log('Dropped files', e.dataTransfer.files);
+                        // console.log('Dropped files', e.dataTransfer.files);
                 },
                 showUploadList: false, // Hide the default upload list
         };
 
-        const handleReset = async() => {
+        const handleReset = () => {
+            // First reset the local image URL state
             setImageUrl(null);
-            if (onImageUpload) {
-                onImageUpload(new ArrayBuffer(0));
-                // Send empty buffer when reset
-                toast({
-                    title: "Image Reset",
-                    description: "The uploaded image has been removed.",
-                });
-            }
             
-            // Call onImageRemove if provided
+            // Call onImageRemove first if provided - this should handle any parent component cleanup
             if (onImageRemove) {
                 onImageRemove();
             }
