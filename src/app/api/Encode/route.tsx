@@ -1,3 +1,5 @@
+'use server';
+
 import { NextRequest, NextResponse } from 'next/server';
 import { join } from 'path';
 import { writeFile, mkdir, readdir as readdirPromise, unlink } from 'fs/promises';
