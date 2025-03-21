@@ -48,6 +48,12 @@ export async function POST(request: NextRequest) {
         const buffer = Buffer.from(bytes);
         // Send to external API for encoding
         var deText = await sendToExternalAPI(buffer);
+        if(deText.status){
+            return NextResponse.json(
+                { error: 'Failed to process request' },
+                { status: 501 }
+            );
+        }
         deText=deText.replace(/Decoded text:/gm, "");
         console.log("DEEEEE",deText);
         return NextResponse.json({"DecryptedText":deText});

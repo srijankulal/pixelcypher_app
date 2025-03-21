@@ -48,10 +48,18 @@ export default function Decrypt() {
             body: formData,
         });
         if (response.status !== 200) {
-            console.error("Failed to decrypt image");
+            if(response.status===501){
+                toast({
+                    title:"Error",
+                    description:"Failed to decrypt image ",
+                    variant:"destructive"
+                });
+                setFalse();
+                return;
+            }
             toast({
                 title:"Error",
-                description:"Failed to decrypt image",
+                description:"Failed to process request",
                 variant:"destructive"
             });
             setFalse();
