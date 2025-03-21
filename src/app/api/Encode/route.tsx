@@ -21,6 +21,7 @@ async function sendToExternalAPI(imageBuffer: Buffer, text: string): Promise<any
     const response = await fetch(API_URL, {
         method: 'POST',
         body: formData,
+         credentials: 'include'
     });
     if (!response.ok) {
         return imgPath=null;

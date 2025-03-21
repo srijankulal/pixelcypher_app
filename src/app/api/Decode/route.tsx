@@ -36,7 +36,6 @@ async function sendToExternalAPI(imageBuffer: Buffer): Promise<any> {
 // Process a multipart form with an image and text to encode
 export async function POST(request: NextRequest) {
     try {
-        
         const formData = await request.formData();
         const image = formData.get('image') as File | null;
         if (!image) {

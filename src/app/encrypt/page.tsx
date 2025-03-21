@@ -163,7 +163,7 @@ export default function Encrypt() {
             formData.append('image', imageBlob, 'image.png');
             formData.append('text', text);
             
-            const response = await fetch('/api/Encode', {
+            const response = await fetch("/api/Encode", {
                 method: 'POST',
                 body: formData,
             });
