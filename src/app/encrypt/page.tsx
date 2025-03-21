@@ -181,12 +181,12 @@ export default function Encrypt() {
                 handleApiError(response.status);
                 return;
             }
-            
-            // Parse the response to get the image URL
-            const path=await response.json();
-            const trimPath = path.EncrpytImagePath.toString().replace(/\\/g, "/").replace(/^.*?public/, '');
-
-            setEncryptedImageUrl(`${trimPath}?t=${Date.now()}`);
+            // Parse the response to get the base64 image data
+            const result = await response.json();
+            console.log("RESULT",result);
+            // Set the encrypted image URL using the base64 data
+            console.log("Encrypted Image URL",result.EncrpytImagePath);
+            setEncryptedImageUrl(result.EncrpytImagePath);
             setFalse();
             toast({
               title: "Success",

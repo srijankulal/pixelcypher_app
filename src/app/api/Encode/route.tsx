@@ -21,24 +21,34 @@ async function sendToExternalAPI(imageBuffer: Buffer, text: string): Promise<any
     const response = await fetch(API_URL, {
         method: 'POST',
         body: formData,
-         credentials: 'include'
     });
     if (!response.ok) {
         return imgPath=null;
     }
- 
+    // Log successful response from external API
+    console.log('Successfully received encoded image from external API');
+
+    // Check if the PUT endpoint is used by a specific vercel blob upload strategy
+    // For demonstration, we're using the conventional approach
     const img = await response.blob();
-    const imgBuffer = Buffer.from(await img.arrayBuffer());
-    await mkdir(join(process.cwd(), 'public', 'images'), { recursive: true });
-    imgPath = join(process.cwd(), 'public', 'images', 'encrypted-image.png');
+    // Create a new File object from the blob
+    const file = new File([img], 'encrypted-image.png', { type: 'image/png' }); 
+    // Import the Vercel Blob client dynamically
+    const { put } = await import('@vercel/blob');
+    
     try {
-        // Write file and wait for completion
-        await writeFile(imgPath, imgBuffer);
-        console.log('Image successfully saved to', imgPath);
-    } catch (writeError) {
-        console.error('Error saving encrypted image:', writeError);
-        throw new Error('Failed to save encrypted image');
+        // Upload to Vercel Blob
+        const { url } = await put(`encrypted-images/${Date.now()}-encrypted-image.png`, file, {
+            access: 'public', // Make the image publicly accessible
+        });
+        
+        console.log('Image successfully uploaded to Vercel Blob:', url);
+        imgPath = url;
+    } catch (uploadError) {
+        console.error('Error uploading to Vercel Blob:', uploadError);
+        throw new Error('Failed to upload encrypted image to Vercel Blob');
     }
+    
     return imgPath;
 
 }
@@ -75,7 +85,7 @@ export async function POST(request: NextRequest) {
         if (!imgPath) {
             return NextResponse.json(
                 { error: 'Failed to process request' },
-                { status: 510 }
+                { status: 502 }
             );
         }
         
@@ -85,9 +95,8 @@ export async function POST(request: NextRequest) {
 
     } catch (error) {
         console.error('Error processing encoding request:', error);
-        const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
         return NextResponse.json(
-            { error: errorMessage },
+            { error: 'Failed to process request' },
             { status: 502 }
         );
     }
