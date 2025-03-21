@@ -177,6 +177,15 @@ export default function Encrypt() {
                     setFalse();
                     return;
                 }
+                if(response.status === 500){
+                    toast({
+                        title:"Error",
+                        description:"500",
+                        variant:"destructive"
+                    });
+                    setFalse();
+                    return;
+                }
                 toast({
                     title:"Error",
                     description:"Failed to process request",
