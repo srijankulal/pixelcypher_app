@@ -17,6 +17,7 @@ export default function Encrypt() {
     const [text, setText] = useState<string>("");
     const [encryptedImageUrl, setEncryptedImageUrl] = useState<string | null>(null);
     const [isMobile, setIsMobile] = useState(false);
+    const [blobId, setBlobId] = useState<string | null>(null);
 
     // Check if the screen size is mobile
     useEffect(() => {
@@ -82,21 +83,30 @@ export default function Encrypt() {
         }
     };   
     
-    const handleDownloadImage = () => {
+    const handleDownloadImage = async() => {
         if (!encryptedImageUrl) {
           console.error("Suiiiiiiii");
           return;
         }
-        
-        // Create a temporary link element
-        const link = document.createElement('a');
-        link.href = encryptedImageUrl;
-        link.download = 'encrypted-image.png'; // Set a filename
-        
-        // Append to the document, click it, and remove it
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
+                    // Fetch the image as a blob
+                    const response = await fetch(encryptedImageUrl);
+                    const blob = await response.blob();
+                    
+                    // Create an object URL for the blob
+                    const blobUrl = URL.createObjectURL(blob);
+                    
+                    // Create a temporary link element
+                    const link = document.createElement('a');
+                    link.href = blobUrl;
+                    link.download = 'encrypted-image.png'; // Set a filename
+
+                    // Append to the document, click it, and remove it
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                    
+                    // Release the object URL
+                    URL.revokeObjectURL(blobUrl);
         toast({
             title: "Success",
             description: "Image download initiated",
@@ -183,10 +193,13 @@ export default function Encrypt() {
             }
             // Parse the response to get the base64 image data
             const result = await response.json();
-            console.log("RESULT",result);
-            // Set the encrypted image URL using the base64 data
-            console.log("Encrypted Image URL",result.EncrpytImagePath);
+            // console.log("RESULT",result);
+
+            // console.log("Encrypted Image URL",result.EncrpytImagePath);
             setEncryptedImageUrl(result.EncrpytImagePath);
+            if (result.blobId) {
+                setBlobId(result.blobId);
+            }
             setFalse();
             toast({
               title: "Success",
@@ -206,6 +219,27 @@ export default function Encrypt() {
         }
     };
 
+    async function removeBlob() {
+        if (!blobId) {
+            return; // No blob to remove
+        }
+        
+        try {
+            // Call your API to delete the blob
+            const response = await fetch(`/api/upload?id=${blobId}`, {
+                method: 'DELETE',
+            });
+            
+            if (response.ok) {
+               console.log("Blob deleted successfully");
+                setBlobId(null);
+            } else {
+                console.error("Failed to delete blob:", await response.text());
+            }
+        } catch (error) {
+            console.error("Error deleting blob:", error);
+        }}
+
     return (
         <>
             <Header></Header>
@@ -224,6 +258,7 @@ export default function Encrypt() {
                         onImageRemove={() => {
                             setEncryptedImageUrl(null);
                             setText("");
+                            removeBlob();
                         }}
                         ></Upload>
                         <h1 className="text-white p-2 md:p-3 text-xl md:text-2xl font-bold justify-start">Enter Encrypting Text: </h1>

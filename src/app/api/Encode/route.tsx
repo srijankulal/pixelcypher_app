@@ -41,8 +41,6 @@ async function sendToExternalAPI(imageBuffer: Buffer, text: string): Promise<any
         const { url } = await put(`encrypted-images/${Date.now()}-encrypted-image.png`, file, {
             access: 'public', // Make the image publicly accessible
         });
-        
-        console.log('Image successfully uploaded to Vercel Blob:', url);
         imgPath = url;
     } catch (uploadError) {
         console.error('Error uploading to Vercel Blob:', uploadError);
@@ -89,7 +87,9 @@ export async function POST(request: NextRequest) {
             );
         }
         
-        return NextResponse.json({"EncrpytImagePath":imgPath},
+        return NextResponse.json({"EncrpytImagePath":imgPath,
+            "blobId": imgPath 
+        },
             { status: 200 }
         );
 
