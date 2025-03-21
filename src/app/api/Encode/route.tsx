@@ -12,6 +12,7 @@ const API_URL = "https://pixelcypher-production.up.railway.app/api/encode";
 // Utility function to send encoding request to external API
 async function sendToExternalAPI(imageBuffer: Buffer, text: string): Promise<any> {
     await deleteImg();
+    var imgPath;
     const formData = new FormData();
     const imageBlob = new Blob([imageBuffer], { type: 'image/png' });
     formData.append('image', imageBlob, 'image.png');
@@ -22,16 +23,13 @@ async function sendToExternalAPI(imageBuffer: Buffer, text: string): Promise<any
         body: formData,
     });
     if (!response.ok) {
-        return NextResponse.json(
-            { error: 'Failed to process request' },
-            { status: 500 }
-        );
+        return imgPath=null;
     }
  
     const img = await response.blob();
     const imgBuffer = Buffer.from(await img.arrayBuffer());
     await mkdir(join(process.cwd(), 'public', 'images'), { recursive: true });
-    const imgPath = join(process.cwd(), 'public', 'images', 'encrypted-image.png');
+    imgPath = join(process.cwd(), 'public', 'images', 'encrypted-image.png');
     try {
         // Write file and wait for completion
         await writeFile(imgPath, imgBuffer);
@@ -47,7 +45,6 @@ async function sendToExternalAPI(imageBuffer: Buffer, text: string): Promise<any
 // Process a multipart form with an image and text to encode
 export async function POST(request: NextRequest) {
     try {
-        
         const formData = await request.formData();
         const image = formData.get('image') as File | null;
         const text = formData.get('text') as string | null;
@@ -74,6 +71,12 @@ export async function POST(request: NextRequest) {
         const buffer = Buffer.from(bytes);
         // Send to external API for encoding
         const imgPath = await sendToExternalAPI(buffer, text);
+        if (!imgPath) {
+            return NextResponse.json(
+                { error: 'Failed to process request' },
+                { status: 510 }
+            );
+        }
         
         return NextResponse.json({"EncrpytImagePath":imgPath},
             { status: 200 }
