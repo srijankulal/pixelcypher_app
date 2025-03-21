@@ -20,9 +20,7 @@ async function sendToExternalAPI(imageBuffer: Buffer, text: string): Promise<any
     const response = await fetch(API_URL, {
         method: 'POST',
         body: formData,
-        credentials: 'include'
     });
-
     if (!response.ok) {
         return NextResponse.json(
             { error: 'Failed to process request' },
@@ -77,13 +75,15 @@ export async function POST(request: NextRequest) {
         // Send to external API for encoding
         const imgPath = await sendToExternalAPI(buffer, text);
         
-        return NextResponse.json({"EncrpytImagePath":imgPath});
+        return NextResponse.json({"EncrpytImagePath":imgPath},
+            { status: 200 }
+        );
 
     } catch (error) {
         console.error('Error processing encoding request:', error);
         return NextResponse.json(
             { error: 'Failed to process request' },
-            { status: 500 }
+            { status: 502 }
         );
     }
     finally {

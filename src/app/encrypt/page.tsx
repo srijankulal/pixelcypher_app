@@ -186,6 +186,15 @@ export default function Encrypt() {
                     setFalse();
                     return;
                 }
+                if(response.status === 502){
+                    toast({
+                        title:"Error",
+                        description:"502",
+                        variant:"destructive"
+                    });
+                    setFalse();
+                    return;
+                }
                 toast({
                     title:"Error",
                     description:"Failed to process request",
