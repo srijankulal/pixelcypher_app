@@ -85,8 +85,9 @@ export async function POST(request: NextRequest) {
 
     } catch (error) {
         console.error('Error processing encoding request:', error);
+        const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
         return NextResponse.json(
-            { error: 'Failed to process request' },
+            { error: errorMessage },
             { status: 502 }
         );
     }
