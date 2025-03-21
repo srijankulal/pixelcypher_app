@@ -106,7 +106,26 @@ export default function Encrypt() {
         });
         console.log("Image download initiated");
     }; 
-    
+    const handleApiError = (status: number) => {
+        const errorMessages: Record<number, {title: string, description: string}> = {
+            400: {title: "Error", description: "No image file and text provided"},
+            401: {title: "Error", description: "No image file provided"},
+            402: {title: "Error", description: "No text provided"},
+            500: {title: "Server Error", description: "An unexpected error occurred"},
+            502: {title: "Gateway Error", description: "Unable to reach the encryption service"},
+            510: {title: "Error", description: "Processing error"}
+        };
+        
+        const message = errorMessages[status] || 
+            {title: "Error", description: `Unexpected error (${status})`};
+        
+        toast({
+            title: message.title,
+            description: message.description,
+            variant: "destructive"
+        });
+        setFalse();
+    }
     const handleEncrypt = async () => {
         try {
             enterLoading(2);
@@ -147,62 +166,12 @@ export default function Encrypt() {
             const response = await fetch('/api/Encode', {
                 method: 'POST',
                 body: formData,
-                 
             });
             if (response.status !== 200) {
-                console.log(response.status)
-                if(response.status === 400 ){
-                    toast({
-                        title:"Error",
-                        description:"No image file and text provided",
-                        variant:"destructive"
-                    });
-                    setFalse();
-                    return;
-                } 
-                if(response.status === 401){
-                    toast({title:"Error",
-                        description:"No image file provided",
-                        variant:"destructive"
-                    });
-                    setFalse();
-                    return;
-                }
-                if(response.status === 402){
-                    toast({
-                        title:"Error",
-                        description:"No text provided",
-                        variant:"destructive"
-                    });
-                    setFalse();
-                    return;
-                }
-                if(response.status === 500){
-                    toast({
-                        title:"Error",
-                        description:"500",
-                        variant:"destructive"
-                    });
-                    setFalse();
-                    return;
-                }
-                if(response.status === 502){
-                    toast({
-                        title:"Error",
-                        description:"502",
-                        variant:"destructive"
-                    });
-                    setFalse();
-                    return;
-                }
-                toast({
-                    title:"Error",
-                    description:"Failed to process request",
-                    variant:"destructive"
-                })
-                setFalse();
+                handleApiError(response.status);
                 return;
             }
+            
             // Parse the response to get the image URL
             const path=await response.json();
             const trimPath = path.EncrpytImagePath.toString().replace(/\\/g, "/").replace(/^.*?public/, '');
