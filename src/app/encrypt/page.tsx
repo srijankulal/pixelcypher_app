@@ -168,6 +168,16 @@ export default function Encrypt() {
                 body: formData,
             });
             if (response.status !== 200) {
+                if(response.status === 502){
+                    const errorData = await response.json();
+                    toast({
+                        title: "Error",
+                        description: errorData.error || "Gateway Error",
+                        variant: "destructive"
+                    });
+                    setFalse();
+                    return;
+                }
                 handleApiError(response.status);
                 return;
             }
