@@ -337,7 +337,7 @@ export default function Encrypt() {
                                 <Button 
                                     className={`text-white py-2 px-4 bg-green-500 rounded-md ${!encryptedImageUrl ? 'opacity-50 cursor-not-allowed' : 'hover:bg-green-600'}`}
                                     onClick={handleCopyImage}
-                                    disabled={!encryptedImageUrl}
+                                    
                                 >
                                     <div className="flex items-center">
                                         <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -349,7 +349,7 @@ export default function Encrypt() {
                                 <Button 
                                     className={`text-white py-2 px-4 bg-green-500 rounded-md ${!encryptedImageUrl ? 'opacity-50 cursor-not-allowed' : 'hover:bg-green-600'}`}
                                     onClick={handleDownloadImage}
-                                    disabled={!encryptedImageUrl}
+                                    
                                 >
                                     <div className="flex items-center">
                                         <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
