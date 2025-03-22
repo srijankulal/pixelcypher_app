@@ -112,7 +112,6 @@ export default function Decrypt() {
                                 readOnly
                                         >
                             </textarea>
-                            
                                 </div>
             </BackGround>
         </>

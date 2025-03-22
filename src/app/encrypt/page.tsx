@@ -6,16 +6,19 @@ import Header from "@/components/Header";
 import Upload from "@/components/upload";
 import Image from "next/image";
 import EnPH from "../../../public/PHpic.png";
-
-import { Button } from 'antd';
+import { Button,Spin } from 'antd';
 import { useState, useEffect } from "react";
 import { toast } from "@/hooks/use-toast";
+import React from "react";
+import { LoadingOutlined } from '@ant-design/icons';
 
 export default function Encrypt() {
     const [loadings, setLoadings] = useState<boolean[]>([]);
     const [imageBuffer, setImageBuffer] = useState<ArrayBuffer | null>(null);
     const [text, setText] = useState<string>("");
     const [encryptedImageUrl, setEncryptedImageUrl] = useState<string | null>(null);
+    const [load, setLoadingState] = React.useState<boolean>(false);
+
     const [isMobile, setIsMobile] = useState(false);
     const [blobId, setBlobId] = useState<string | null>(null);
 
@@ -135,9 +138,11 @@ export default function Encrypt() {
             variant: "destructive"
         });
         setFalse();
+        setLoadingState(false);
     }
     const handleEncrypt = async () => {
         try {
+
             enterLoading(2);
             if(!imageBuffer && (!text || !text.trim())){
                 toast({
@@ -146,6 +151,7 @@ export default function Encrypt() {
                     variant:"destructive"
                 });
                 setFalse();
+                setLoadingState(false);
                 return;
             }
             if (!imageBuffer) {
@@ -156,6 +162,7 @@ export default function Encrypt() {
                     variant:"destructive"
                 });
                 setFalse();
+                setLoadingState(false);
                 return;
             }
             if(!text){
@@ -165,6 +172,7 @@ export default function Encrypt() {
                     variant:"destructive"
                 })
                 setFalse();
+                setLoadingState(false);
                 return;
             }
             
@@ -186,6 +194,7 @@ export default function Encrypt() {
                         variant: "destructive"
                     });
                     setFalse();
+                    setLoadingState(false);
                     return;
                 }
                 handleApiError(response.status);
@@ -208,9 +217,11 @@ export default function Encrypt() {
               className: "bg-green-500 text-white",
               duration: 5000,
             });
+            setLoadingState(false);
             console.log("Encryption successful");
         } catch (error) {
             console.error("Encryption failed:", error);
+            setLoadingState(false);
             // Reset loading state
             setFalse();
         }
@@ -277,6 +288,7 @@ export default function Encrypt() {
                             type="primary"
                             loading={loadings[2]}
                             onClick={() => {
+                                setLoadingState(true);
                                 handleEncrypt();
                             }}
                             iconPosition="end"
@@ -289,13 +301,27 @@ export default function Encrypt() {
                     <div className="flex flex-col w-full md:w-auto items-center md:items-start">
                         <h1 className="text-white p-2 md:p-3 text-xl md:text-2xl font-bold">Encrypted Image: </h1>
                         <div className="flex justify-center items-center border-2 border-gray-950 rounded-lg bg-white bg-opacity-20 relative h-48 w-48 md:h-64 md:w-64">
+                        load ?(
+                        <Spin 
+                            spinning={load} 
+                            indicator={<LoadingOutlined style={{ fontSize: 34, color: '#4ade80' }} spin />} 
+                            size="large" 
+                        >
                             <Image 
-                                src={encryptedImageUrl || EnPH} 
+                                src={EnPH} 
                                 alt="Encrypted Image" 
                                 fill 
                                 style={{ objectFit: 'contain' }}
                                 className="p-2"
                             />
+                        </Spin>)
+                            :( <Image 
+                                src={encryptedImageUrl || EnPH} 
+                                alt="Encrypted Image" 
+                                fill 
+                                style={{ objectFit: 'contain' }}
+                                className="p-2"
+                            />)
                         </div>
                         <div className="flex flex-row items-center justify-center md:justify-start pt-2">
                             <div className="flex flex-col pr-4 pl-2">

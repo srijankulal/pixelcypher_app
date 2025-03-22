@@ -96,19 +96,26 @@ export default function Upload({ onImageUpload, setEncryptedImageUrl, onImageRem
                         
                         {!imageUrl ? (
                                 <>
-                                <Dragger {...props} className="w-3/4 h-3/4">
+                                <Dragger {...props} className="w-3/4 h-3/4 opacity-100">
                                 <div className="flex flex-col items-center justify-center">
                                         <div className="flex flex-col items-center justify-center">
                                                 <Image src={UploadPic} alt="upload" className="w-3/4 h-3/4" />
-                                        
                                         </div>
-                                        
-                                        <p className="text-white p-2">Click or drag image here. Max size: 10MB.</p>
+                                        <p className="text-white p-2">Click or drag image here. Max size: 1MB.</p>
                                 </div>
                                 </Dragger>
                         </>
                         ) : (
                                 <div className="relative">
+                                    <div className="flex justify-center items-center border-2 border-gray-950 rounded-lg bg-white bg-opacity-20 relative h-48 w-48 md:h-64 md:w-64">
+                                    <Image
+                                        src={imageUrl} 
+                                        alt="Uploaded image" 
+                                        fill 
+                                        style={{ objectFit: 'contain' }}
+                                        className="p-2"
+                                    />
+                                    </div>
                                     <button 
                                         onClick={handleReset}
                                         className="absolute -top-2 -right-2 bg-red-500 hover:bg-red-700 text-white rounded-full w-8 h-8 flex items-center justify-center"
@@ -118,11 +125,6 @@ export default function Upload({ onImageUpload, setEncryptedImageUrl, onImageRem
                                             <path d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708z"/>
                                         </svg>
                                     </button>
-                                    <img 
-                                        src={imageUrl} 
-                                        alt="Uploaded image" 
-                                        className="max-w-full max-h-[200px] rounded-lg"
-                                    />
                                 </div>
                         )}
                 </div>
