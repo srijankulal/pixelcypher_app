@@ -13,7 +13,7 @@ export default function Home() {
 
   <div className=" bg-black">  
     <Header></Header>
-    <BackGround >
+    <BackGround className="flex flex-col justify-center items-center min-h-screen w-full px-4 py-8">
     <FloatButtons whereAt="home"></FloatButtons>
     <div className="flex flex-col items-center">
       <h3 className="text-white p-3 text-xl">Encrypt Your Messages as Images</h3>

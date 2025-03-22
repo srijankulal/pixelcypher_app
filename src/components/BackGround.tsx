@@ -8,8 +8,9 @@ interface BackGroundProps extends PropsWithChildren {
 
 const BackGround: React.FC<BackGroundProps> = ({ children, className }) => {
   return (
-    <div className="flex justify-center p-2 h-screen w-screen relative rounded-sm overflow-hidden">
-      <div className="pixel-background absolute w-3/4 h-3/4 border-2 border-green-950 rounded-md bg-[#050511]">
+    <div className={`flex justify-center items-center min-h-screen w-full p-0 relative ${className || ''}`}>
+      {/* Main container - full screen with centering */}
+      <div className="pixel-background w-full h-full md:w-4/5 md:h-4/5 border-2 border-green-950 rounded-md bg-[#050511] mx-auto">
         {/* Pixels layer */}
         <div className="pixels-container absolute inset-0 overflow-hidden pointer-events-none">
           {Array.from({ length: 8 }).map((_, index) => (
@@ -26,7 +27,7 @@ const BackGround: React.FC<BackGroundProps> = ({ children, className }) => {
         </div>
         
         {/* Content layer */}
-        <div className="relative z-10 flex flex-col items-center justify-center h-full">
+        <div className="relative z-10 flex flex-col items-center justify-center h-full w-full overflow-y-auto py-4">
           {children}
         </div>
       </div>
@@ -35,6 +36,7 @@ const BackGround: React.FC<BackGroundProps> = ({ children, className }) => {
         .pixel-background {
           position: relative;
           overflow: hidden;
+          max-width: 1200px; /* Prevent it from being too wide on very large screens */
         }
         
         .pixel {
@@ -44,6 +46,7 @@ const BackGround: React.FC<BackGroundProps> = ({ children, className }) => {
           background-color: #0F0;
           animation: moveUp linear infinite;
           opacity: 0.5;
+          top: 100%;
         }
         
         @keyframes moveUp {
@@ -52,6 +55,13 @@ const BackGround: React.FC<BackGroundProps> = ({ children, className }) => {
           }
           100% {
             top: -50px;
+          }
+        }
+
+        /* Make sure the container is properly centered */
+        @media (min-width: 768px) {
+          .pixel-background {
+            margin: 0 auto;
           }
         }
       `}</style>

@@ -6,7 +6,7 @@ import Header from "@/components/Header";
 import Upload from "@/components/upload";
 import Image from "next/image";
 import EnPH from "../../../public/PHpic.png";
-import { Button,Spin } from 'antd';
+import { Button, Spin } from 'antd';
 import { useState, useEffect } from "react";
 import { toast } from "@/hooks/use-toast";
 import React from "react";
@@ -91,25 +91,25 @@ export default function Encrypt() {
           console.error("Suiiiiiiii");
           return;
         }
-                    // Fetch the image as a blob
-                    const response = await fetch(encryptedImageUrl);
-                    const blob = await response.blob();
-                    
-                    // Create an object URL for the blob
-                    const blobUrl = URL.createObjectURL(blob);
-                    
-                    // Create a temporary link element
-                    const link = document.createElement('a');
-                    link.href = blobUrl;
-                    link.download = 'encrypted-image.png'; // Set a filename
+        // Fetch the image as a blob
+        const response = await fetch(encryptedImageUrl);
+        const blob = await response.blob();
+        
+        // Create an object URL for the blob
+        const blobUrl = URL.createObjectURL(blob);
+        
+        // Create a temporary link element
+        const link = document.createElement('a');
+        link.href = blobUrl;
+        link.download = 'encrypted-image.png'; // Set a filename
 
-                    // Append to the document, click it, and remove it
-                    document.body.appendChild(link);
-                    link.click();
-                    document.body.removeChild(link);
-                    
-                    // Release the object URL
-                    URL.revokeObjectURL(blobUrl);
+        // Append to the document, click it, and remove it
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        
+        // Release the object URL
+        URL.revokeObjectURL(blobUrl);
         toast({
             title: "Success",
             description: "Image download initiated",
@@ -249,98 +249,114 @@ export default function Encrypt() {
             }
         } catch (error) {
             console.error("Error deleting blob:", error);
-        }}
+        }
+    }
 
     return (
         <>
             <Header></Header>
-            <BackGround className="flex flex-col justify-center items-center min-h-screen w-full">
-                
-                <h1 className="text-white p-4 text-4xl font-bold flex justify-center items-center w-full ">Encrypt</h1>
-                
-                <div className={`flex ${isMobile ? 'flex-col' : 'flex-row'} justify-between p-3 w-full max-w-6xl`}>
-                   
-                    <div className="flex flex-col w-full md:w-auto">
-                        <Upload 
-                        onImageUpload={(buffer: ArrayBuffer | null) => {
-                            setImageBuffer(buffer);
-                            setEncryptedImageUrl(null);
-                        }}
-                        onImageRemove={() => {
-                            setEncryptedImageUrl(null);
-                            setText("");
-                            removeBlob();
-                        }}
-                        ></Upload>
-                        <h1 className="text-white p-2 md:p-3 text-xl md:text-2xl font-bold justify-start">Enter Encrypting Text: </h1>
-                        <input 
-                            type="text" 
-                            className="text-black p-2 text-lg md:text-xl font-bold w-full" 
-                            placeholder="Enter the secret Text"
-                            value={text}
-                            onChange={(e) => setText(e.target.value)}
-                            required
-                        />
-                    </div>
+            <BackGround className="flex flex-col justify-center items-center min-h-screen w-full px-4 py-8">
+                <div className="flex flex-col items-center justify-center w-full">
+                    <h1 className="text-white p-2 text-2xl md:text-4xl font-bold text-center mb-4">Encrypt</h1>
                     
-                    <div className="flex flex-col justify-center p-2 md:p-5 w-full md:w-auto">
-                        <Button
-                            type="primary"
-                            loading={loadings[2]}
-                            onClick={() => {
-                                setLoadingState(true);
-                                handleEncrypt();
-                            }}
-                            iconPosition="end"
-                            className="text-white p-3 md:p-4 bg-green-600 hover:bg-green-800 transition-colors duration-300 hover:outline hover:shadow-lg" 
-                        >
-                            Encrypt
-                        </Button>
-                    </div>
-                    
-                    <div className="flex flex-col w-full md:w-auto items-center md:items-start">
-                        <h1 className="text-white p-2 md:p-3 text-xl md:text-2xl font-bold">Encrypted Image: </h1>
-                        <div className="flex justify-center items-center border-2 border-gray-950 rounded-lg bg-white bg-opacity-20 relative h-48 w-48 md:h-64 md:w-64">
-                        load ?(
-                        <Spin 
-                            spinning={load} 
-                            indicator={<LoadingOutlined style={{ fontSize: 34, color: '#4ade80' }} spin />} 
-                            size="large" 
-                        >
-                            <Image 
-                                src={EnPH} 
-                                alt="Encrypted Image" 
-                                fill 
-                                style={{ objectFit: 'contain' }}
-                                className="p-2"
+                    {/* Main content container with improved responsive layout */}
+                    <div className="flex flex-col md:flex-row gap-6 w-full max-w-6xl justify-center items-center">
+                        
+                        {/* Upload and Text Input Section */}
+                        <div className="flex flex-col w-full md:w-1/3 max-w-xs md:max-w-full">
+                            <Upload 
+                                onImageUpload={(buffer: ArrayBuffer | null) => {
+                                    setImageBuffer(buffer);
+                                    setEncryptedImageUrl(null);
+                                }}
+                                onImageRemove={() => {
+                                    setEncryptedImageUrl(null);
+                                    setText("");
+                                    removeBlob();
+                                }}
                             />
-                        </Spin>)
-                            :( <Image 
-                                src={encryptedImageUrl || EnPH} 
-                                alt="Encrypted Image" 
-                                fill 
-                                style={{ objectFit: 'contain' }}
-                                className="p-2"
-                            />)
+                            <h1 className="text-white p-2 text-xl font-bold mt-4">Enter Encrypting Text: </h1>
+                            <input 
+                                type="text" 
+                                className="text-black p-2 text-lg font-bold w-full rounded" 
+                                placeholder="Enter the secret Text"
+                                value={text}
+                                onChange={(e) => setText(e.target.value)}
+                                required
+                            />
                         </div>
-                        <div className="flex flex-row items-center justify-center md:justify-start pt-2">
-                            <div className="flex flex-col pr-4 pl-2">
-                                <Button className={`text-white text-lg bg-green-500 rounded-full ${!encryptedImageUrl ? 'opacity-50 cursor-not-allowed ' : 'hover:outline'}`}
-                                onClick={handleCopyImage}>
-                                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
-                                    </svg>
-                                </Button>
-                                
+                        
+                        {/* Button Section - Improved mobile positioning */}
+                        <div className="flex flex-col justify-center items-center w-full md:w-1/6 my-4">
+                            <Button
+                                type="primary"
+                                loading={loadings[2]}
+                                onClick={() => {
+                                    setLoadingState(true);
+                                    handleEncrypt();
+                                }}
+                                className="text-white py-2 px-6 bg-green-600 hover:bg-green-800 transition-colors duration-300 hover:shadow-lg w-48 md:w-auto"
+                            >
+                                Encrypt
+                            </Button>
+                        </div>
+                        
+                        {/* Result Section - Improved for mobile */}
+                        <div className="flex flex-col w-full md:w-1/3 max-w-xs md:max-w-full items-center">
+                            <h1 className="text-white p-2 text-xl font-bold self-center mb-2">Encrypted Image: </h1>
+                            
+                            {/* Image container - made consistent size */}
+                            <div className="flex justify-center items-center border-2 border-gray-950 rounded-lg bg-white bg-opacity-20 relative h-48 w-48 mb-4">
+                                {load ? (
+                                    <Spin 
+                                        spinning={load} 
+                                        indicator={<LoadingOutlined style={{ fontSize: 34, color: '#4ade80' }} spin />} 
+                                        size="large" 
+                                    >
+                                        <Image 
+                                            src={EnPH} 
+                                            alt="Encrypted Image" 
+                                            fill 
+                                            style={{ objectFit: 'contain' }}
+                                            className="p-2"
+                                        />
+                                    </Spin>
+                                ) : (
+                                    <Image 
+                                        src={encryptedImageUrl || EnPH} 
+                                        alt="Encrypted Image" 
+                                        fill 
+                                        style={{ objectFit: 'contain' }}
+                                        className="p-2"
+                                    />
+                                )}
                             </div>
                             
-                            <div className="flex flex-col">
-                                <Button className={`text-white text-lg bg-green-500 rounded-full ${!encryptedImageUrl ? 'opacity-50 cursor-not-allowed ' : 'hover:outline'}`}
-                                onClick={handleDownloadImage}
+                            {/* Buttons container - Improved layout for mobile */}
+                            <div className="flex flex-row justify-center gap-4 mt-2 w-full">
+                                <Button 
+                                    className={`text-white py-2 px-4 bg-green-500 rounded-md ${!encryptedImageUrl ? 'opacity-50 cursor-not-allowed' : 'hover:bg-green-600'}`}
+                                    onClick={handleCopyImage}
+                                    disabled={!encryptedImageUrl}
                                 >
-                                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
-                                    </svg>
+                                    <div className="flex items-center">
+                                        <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                                        </svg>
+                                        Copy
+                                    </div>
+                                </Button>
+                                <Button 
+                                    className={`text-white py-2 px-4 bg-green-500 rounded-md ${!encryptedImageUrl ? 'opacity-50 cursor-not-allowed' : 'hover:bg-green-600'}`}
+                                    onClick={handleDownloadImage}
+                                    disabled={!encryptedImageUrl}
+                                >
+                                    <div className="flex items-center">
+                                        <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                                        </svg>
+                                        Download
+                                    </div>
                                 </Button>
                             </div>
                         </div>
