@@ -5,7 +5,8 @@ import { existsSync } from 'fs';
 
 
 
-const API_URL = "https://pixelcypher-production.up.railway.app/api/decode";
+// const API_URL = "https://pixelcypher-production.up.railway.app/api/decode";
+const API_URL = "https://pixel-cypher-api.onrender.com/api/decode";
 
 // Utility function to send encoding request to external API
 async function sendToExternalAPI(imageBuffer: Buffer): Promise<any> {
